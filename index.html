@@ -2681,8 +2681,8 @@ document.getElementById('rolloverBanner').style.display = 'none';
 const totalIncome = monthData.income + monthData.extraIncome.reduce((s, e) => s + e.amount, 0) + monthData.rollover;
 const totalExpenses = monthData.expenses.reduce((s, e) => s + e.amount, 0);
 const fixedExpenses = appData.finances.fixedExpenses.filter(f => f.active).reduce((s, f) => s + f.amount, 0);
-const goalsAllocation = appData.goals.reduce((s, g) => s + (g.monthlyAllocation || 0), 0);
-const available = totalIncome - totalExpenses - fixedExpenses - goalsAllocation;
+const goalsSpent = appData.goals.reduce((s, g) => s + (g.current || 0), 0);
+const available = totalIncome - totalExpenses - fixedExpenses - goalsSpent;
 const dailyBudget = remainingDays > 0 ? available / remainingDays : 0;
 
 // Main display
@@ -2699,7 +2699,7 @@ document.getElementById('dailyProgress').style.width = dailyPercent + '%';
 // Quick stats
 document.getElementById('quickDaily').textContent = '€' + dailyBudget.toFixed(0);
 document.getElementById('quickFixed').textContent = '€' + fixedExpenses.toFixed(0);
-document.getElementById('quickGoals').textContent = '€' + goalsAllocation.toFixed(0);
+document.getElementById('quickGoals').textContent = '€' + goalsSpent.toFixed(0);
 
 // Stats grid
 document.getElementById('statGiorni').textContent = remainingDays;
@@ -3222,6 +3222,7 @@ if (!goal) return;
 goal.current += amount;
 if (goal.current > goal.target) goal.current = goal.target;
 saveData();
+updateUI(); // Aggiorna il budget dopo aver versato
 renderGoals();
 if (goal.current >= goal.target) {
 celebrateGoal();
