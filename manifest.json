@@ -1,0 +1,22 @@
+{
+  "name": "Budget Pro Meddy",
+  "short_name": "Budget Pro",
+  "description": "Gestione budget intelligente",
+  "start_url": "./cdgf.html",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
