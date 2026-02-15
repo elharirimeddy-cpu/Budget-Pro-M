@@ -1279,9 +1279,59 @@ background: var(--bg-tertiary);
 .spotlight-item:last-child {
 border-bottom: none;
 }
+
+/* Pull to refresh indicator */
+.ptr-indicator {
+position: fixed;
+top: 70px;
+left: 50%;
+transform: translateX(-50%) translateY(-50px);
+background: var(--glass-bg);
+padding: 12px 24px;
+border-radius: 20px;
+box-shadow: var(--shadow-lg);
+border: 1px solid var(--glass-border);
+z-index: 90;
+opacity: 0;
+transition: all 0.3s ease;
+pointer-events: none;
+display: flex;
+align-items: center;
+gap: 8px;
+font-weight: 600;
+font-size: 14px;
+}
+
+.ptr-indicator.visible {
+opacity: 1;
+transform: translateX(-50%) translateY(0);
+}
+
+.ptr-indicator.spinning .ptr-icon {
+animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+from { transform: rotate(0deg); }
+to { transform: rotate(360deg); }
+}
+
+/* PIN input fix */
+.pin-input {
+font-size: 24px !important;
+letter-spacing: 8px !important;
+text-align: center !important;
+-webkit-text-security: disc !important;
+}
 </style>
 </head>
 <body>
+
+<!-- PULL TO REFRESH INDICATOR -->
+<div id="ptrIndicator" class="ptr-indicator">
+<span class="ptr-icon">↓</span>
+<span>Rilascia per aggiornare</span>
+</div>
 
 <!-- ============================================ -->
 <!-- SPLASH SCREEN BIANCO E NERO -->
@@ -1498,7 +1548,7 @@ border-bottom: none;
 
 
 <!-- SMART ALERTS CONTAINER -->
-<div id="smartAlertContainer"></div>
+<div id="smartAlertContainer" role="alert" aria-live="polite"></div>
 
 
 <!-- PIN PROTECTION -->
@@ -1509,18 +1559,18 @@ border-bottom: none;
 </div>
 <div class="pin-display" id="pinDisplay">••••</div>
 <div class="pin-pad">
-<button class="pin-btn" onclick="enterPin(1)">1</button>
-<button class="pin-btn" onclick="enterPin(2)">2</button>
-<button class="pin-btn" onclick="enterPin(3)">3</button>
-<button class="pin-btn" onclick="enterPin(4)">4</button>
-<button class="pin-btn" onclick="enterPin(5)">5</button>
-<button class="pin-btn" onclick="enterPin(6)">6</button>
-<button class="pin-btn" onclick="enterPin(7)">7</button>
-<button class="pin-btn" onclick="enterPin(8)">8</button>
-<button class="pin-btn" onclick="enterPin(9)">9</button>
-<button class="pin-btn" onclick="clearPin()" style="font-size: 20px;">⌫</button>
-<button class="pin-btn" onclick="enterPin(0)">0</button>
-<button class="pin-btn" onclick="checkPin()" style="font-size: 20px;">✓</button>
+<button class="pin-btn" onclick="enterPin(1)" aria-label="1">1</button>
+<button class="pin-btn" onclick="enterPin(2)" aria-label="2">2</button>
+<button class="pin-btn" onclick="enterPin(3)" aria-label="3">3</button>
+<button class="pin-btn" onclick="enterPin(4)" aria-label="4">4</button>
+<button class="pin-btn" onclick="enterPin(5)" aria-label="5">5</button>
+<button class="pin-btn" onclick="enterPin(6)" aria-label="6">6</button>
+<button class="pin-btn" onclick="enterPin(7)" aria-label="7">7</button>
+<button class="pin-btn" onclick="enterPin(8)" aria-label="8">8</button>
+<button class="pin-btn" onclick="enterPin(9)" aria-label="9">9</button>
+<button class="pin-btn" onclick="clearPin()" style="font-size: 20px;" aria-label="Cancella">⌫</button>
+<button class="pin-btn" onclick="enterPin(0)" aria-label="0">0</button>
+<button class="pin-btn" onclick="checkPin()" style="font-size: 20px;" aria-label="Conferma">✓</button>
 </div>
 <button onclick="disablePin()" style="margin-top: 40px; background: transparent; color: var(--text-secondary); font-size: 15px;">
 Disabilita protezione
@@ -1545,16 +1595,16 @@ Disabilita protezione
 </div>
 
 <div class="input-group">
-<input type="text" id="inputNome" placeholder="Come ti chiami?">
+<input type="text" id="inputNome" placeholder="Come ti chiami?" aria-label="Nome utente">
 </div>
 
 <div class="input-group">
 <p style="color: var(--text-secondary); font-size: 15px; margin-bottom: 8px;">Proteggi con PIN (opzionale)</p>
-<input type="password" id="inputPin" placeholder="PIN a 4 cifre" maxlength="4" inputmode="numeric">
+<input type="tel" id="inputPin" placeholder="PIN a 4 cifre" maxlength="4" inputmode="numeric" pattern="[0-9]*" class="pin-input" aria-label="PIN a 4 cifre">
 </div>
 
 <div style="flex: 1;"></div>
-<button onclick="goSetup1()">Continua →</button>
+<button onclick="goSetup1()" aria-label="Continua">Continua →</button>
 </div>
 
 <div id="setup1" class="setup-screen">
@@ -1565,12 +1615,12 @@ Disabilita protezione
 
 <div class="card card-gradient" style="margin-bottom: 32px;">
 <h3 style="color: rgba(255,255,255,0.8);">Stipendio Mensile</h3>
-<input type="number" id="inputEntrate" placeholder="0" style="font-size: 48px; text-align: center; background: rgba(255,255,255,0.2); color: white; margin-top: 16px;">
+<input type="number" id="inputEntrate" placeholder="0" style="font-size: 48px; text-align: center; background: rgba(255,255,255,0.2); color: rgb(0, 0, 0); margin-top: 16px;" aria-label="Stipendio mensile">
 </div>
 
 <div style="flex: 1;"></div>
-<button onclick="goSetup2()">Continua</button>
-<button onclick="backToSetup0()" class="btn-ghost" style="margin-top: 12px;">Indietro</button>
+<button onclick="goSetup2()" aria-label="Continua">Continua</button>
+<button onclick="backToSetup0()" class="btn-ghost" style="margin-top: 12px;" aria-label="Indietro">Indietro</button>
 </div>
 
 <div id="setup2" class="setup-screen">
@@ -1582,17 +1632,17 @@ Disabilita protezione
 <div id="listaFisseSetup" style="margin-bottom: 24px; max-height: 300px; overflow-y: auto;"></div>
 
 <div class="card" style="margin-bottom: 24px;">
-<input type="text" id="inputFissaNome" placeholder="Nome (es. Affitto, Netflix...)">
+<input type="text" id="inputFissaNome" placeholder="Nome (es. Affitto, Netflix...)" aria-label="Nome spesa fissa">
 <div class="input-row" style="margin-top: 12px;">
-<input type="number" id="inputFissaPrezzo" placeholder="Importo €" style="flex: 2;">
-<select id="inputFissaCategoria" style="flex: 1;">
+<input type="number" id="inputFissaPrezzo" placeholder="Importo €" style="flex: 2;" aria-label="Importo spesa fissa">
+<select id="inputFissaCategoria" style="flex: 1;" aria-label="Categoria spesa fissa">
 <option value="Casa">🏠 Casa</option>
 <option value="Trasporti">🚗 Auto</option>
 <option value="Svago">🎮 Svago</option>
 <option value="Altro">📦 Altro</option>
 </select>
 </div>
-<button onclick="addFissaSetup()" class="btn-outline" style="margin-top: 12px;">+ Aggiungi Spesa Fissa</button>
+<button onclick="addFissaSetup()" class="btn-outline" style="margin-top: 12px;" aria-label="Aggiungi spesa fissa">+ Aggiungi Spesa Fissa</button>
 </div>
 
 <div class="card" style="background: var(--bg-tertiary); margin-bottom: 24px; border: 1px solid var(--glass-border);">
@@ -1603,7 +1653,7 @@ Disabilita protezione
 </div>
 
 <div style="flex: 1;"></div>
-<button onclick="finishSetup()">Inizia a usare Budget Pro 🚀</button>
+<button onclick="finishSetup()" aria-label="Inizia a usare Budget Pro">Inizia a usare Budget Pro 🚀</button>
 </div>
 
 <!-- MAIN APP -->
@@ -1627,12 +1677,12 @@ Disabilita protezione
         </svg>
         
         <div>
-            <div style="font-size: 17px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px;">Budget Pro</div>
+            <div class="status-title" style="font-size: 17px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px;">Budget Pro</div>
         </div>
     </div>
     
     <div class="status-actions">
-        <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" aria-label="Cambia tema">🌙</button>
     </div>
 </div>
 
@@ -1728,16 +1778,16 @@ Disabilita protezione
 <div class="card">
 <h3>Nuova Spesa</h3>
 <div class="input-group">
-<input type="text" id="inputSpesaNome" placeholder="Cosa hai comprato?">
+<input type="text" id="inputSpesaNome" placeholder="Cosa hai comprato?" aria-label="Nome spesa">
 </div>
 <div class="input-row">
-<input type="number" id="inputSpesaPrezzo" placeholder="€ Importo" step="0.01">
-<select id="inputSpesaCategoria"></select>
+<input type="number" id="inputSpesaPrezzo" placeholder="€ Importo" step="0.01" aria-label="Importo spesa">
+<select id="inputSpesaCategoria" aria-label="Categoria spesa"></select>
 </div>
 <div class="input-group" style="margin-top: 12px;">
-<input type="date" id="inputSpesaData">
+<input type="date" id="inputSpesaData" aria-label="Data spesa">
 </div>
-<button onclick="addSpesa()" style="margin-top: 8px;">
+<button onclick="addSpesa()" style="margin-top: 8px;" aria-label="Aggiungi spesa">
 Aggiungi Spesa
 </button>
 </div>
@@ -1748,7 +1798,7 @@ Aggiungi Spesa
 <h3>Filtra Spese</h3>
 <div class="search-bar">
 <span class="search-icon">🔍</span>
-<input type="text" id="searchSpese" placeholder="Cerca spese..." oninput="filterSpese()">
+<input type="text" id="searchSpese" placeholder="Cerca spese..." oninput="debouncedFilterSpese()" aria-label="Cerca spese">
 </div>
 <div class="filter-chips" id="categoryChips"></div>
 </div>
@@ -1757,7 +1807,7 @@ Aggiungi Spesa
 <div class="card">
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
 <h3 id="speseTitle" style="margin: 0;">Spese Recenti</h3>
-<button class="btn-small btn-ghost" onclick="exportCSV()">📥 CSV</button>
+<button class="btn-small btn-ghost" onclick="exportCSV()" aria-label="Esporta CSV">📥 CSV</button>
 </div>
 <div id="listaSpese"></div>
 <div id="emptySpese" class="empty-state" style="display: none;">
@@ -1776,12 +1826,12 @@ Aggiungi Spesa
 
 <div class="card">
 <h3>Nuovo Obiettivo di Risparmio</h3>
-<input type="text" id="inputGoalNome" placeholder="Per cosa stai risparmiando?">
+<input type="text" id="inputGoalNome" placeholder="Per cosa stai risparmiando?" aria-label="Nome obiettivo">
 <div class="input-row" style="margin-top: 12px;">
-<input type="number" id="inputGoalTarget" placeholder="€ Target" step="0.01">
-<input type="date" id="inputGoalDeadline" placeholder="Scadenza">
+<input type="number" id="inputGoalTarget" placeholder="€ Target" step="0.01" aria-label="Target obiettivo">
+<input type="date" id="inputGoalDeadline" placeholder="Scadenza" aria-label="Scadenza obiettivo">
 </div>
-<button onclick="createGoal()" class="btn-purple" style="margin-top: 12px;">
+<button onclick="createGoal()" class="btn-purple" style="margin-top: 12px;" aria-label="Crea obiettivo">
 Crea Obiettivo
 </button>
 </div>
@@ -1845,7 +1895,7 @@ Crea Obiettivo
 <p style="font-size: 13px; color: var(--text-secondary);">Membro dal <span id="settingsData"></span></p>
 </div>
 </div>
-<button class="btn-small btn-ghost" onclick="editName()">Modifica</button>
+<button class="btn-small btn-ghost" onclick="editName()" aria-label="Modifica nome">Modifica</button>
 </div>
 </div>
 
@@ -1853,12 +1903,12 @@ Crea Obiettivo
 <div class="card">
 <h3>Entrate Extra</h3>
 <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">Premi, regali, rimborsi o entrate aggiuntive del mese</p>
-<input type="text" id="inputExtraNome" placeholder="Descrizione (es. Rimborso, Premio...)">
+<input type="text" id="inputExtraNome" placeholder="Descrizione (es. Rimborso, Premio...)" aria-label="Descrizione entrata extra">
 <div class="input-row" style="margin-top: 12px;">
-<input type="number" id="inputExtraAmount" placeholder="€ Importo" step="0.01">
-<input type="date" id="inputExtraData">
+<input type="number" id="inputExtraAmount" placeholder="€ Importo" step="0.01" aria-label="Importo entrata extra">
+<input type="date" id="inputExtraData" aria-label="Data entrata extra">
 </div>
-<button onclick="addExtraIncome()" class="btn-success" style="margin-top: 12px;">
+<button onclick="addExtraIncome()" class="btn-success" style="margin-top: 12px;" aria-label="Aggiungi entrata extra">
 + Aggiungi Entrata
 </button>
 
@@ -1869,7 +1919,7 @@ Crea Obiettivo
 <div class="card">
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
 <h3>Categorie Personalizzate</h3>
-<button class="btn-small btn-outline" onclick="openCategoryModal()">+ Nuova</button>
+<button class="btn-small btn-outline" onclick="openCategoryModal()" aria-label="Nuova categoria">+ Nuova</button>
 </div>
 <div id="categoriesList"></div>
 </div>
@@ -1878,18 +1928,18 @@ Crea Obiettivo
 <div class="card">
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
 <h3>Spese Fisse Ricorrenti</h3>
-<button class="btn-small btn-outline" onclick="toggleFixedForm()">+ Aggiungi</button>
+<button class="btn-small btn-outline" onclick="toggleFixedForm()" aria-label="Aggiungi spesa fissa">+ Aggiungi</button>
 </div>
 
 <div id="fixedForm" style="display: none; margin-bottom: 20px;">
-<input type="text" id="newFixedName" placeholder="Nome spesa">
+<input type="text" id="newFixedName" placeholder="Nome spesa" aria-label="Nome spesa fissa">
 <div class="input-row" style="margin-top: 12px;">
-<input type="number" id="newFixedAmount" placeholder="€ Importo" step="0.01">
-<select id="newFixedCategory"></select>
+<input type="number" id="newFixedAmount" placeholder="€ Importo" step="0.01" aria-label="Importo spesa fissa">
+<select id="newFixedCategory" aria-label="Categoria spesa fissa"></select>
 </div>
 <div style="display: flex; gap: 8px; margin-top: 12px;">
-<button onclick="addFixedExpense()" style="flex: 1;">Salva</button>
-<button onclick="toggleFixedForm()" class="btn-ghost" style="flex: 1;">Annulla</button>
+<button onclick="addFixedExpense()" style="flex: 1;" aria-label="Salva spesa fissa">Salva</button>
+<button onclick="toggleFixedForm()" class="btn-ghost" style="flex: 1;" aria-label="Annulla">Annulla</button>
 </div>
 </div>
 
@@ -1911,7 +1961,7 @@ Crea Obiettivo
 <div style="font-size: 28px; font-weight: 700; color: var(--text-primary);" id="baseIncomeDisplay">€0</div>
 <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">Stipendio ricorrente</div>
 </div>
-<button class="btn-small btn-ghost" onclick="editBaseIncome()">Modifica</button>
+<button class="btn-small btn-ghost" onclick="editBaseIncome()" aria-label="Modifica stipendio">Modifica</button>
 </div>
 </div>
 
@@ -1942,7 +1992,7 @@ Crea Obiettivo
 <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
 Scarica le tue spese in formato CSV
 </p>
-<button onclick="exportCSV()" class="btn-outline">
+<button onclick="exportCSV()" class="btn-outline" aria-label="Esporta CSV">
 📄 Esporta CSV
 </button>
 </div>
@@ -1951,7 +2001,7 @@ Scarica le tue spese in formato CSV
 <!-- Month Actions -->
 <div class="card">
 <h3>Gestione Mese</h3>
-<button onclick="resetMonth()" class="btn-orange" style="margin-bottom: 12px;">
+<button onclick="resetMonth()" class="btn-orange" style="margin-bottom: 12px;" aria-label="Chiudi mese e rollover">
 🔄 Chiudi Mese & Rollover
 </button>
 <p style="font-size: 13px; color: var(--text-secondary);">
@@ -1962,7 +2012,7 @@ Trasferisce il residuo nel prossimo mese e archivia i dati attuali
 <!-- Danger Zone -->
 <div class="card" style="border: 2px solid var(--accent-red);">
 <h3 style="color: var(--accent-red);">Zona Pericolo</h3>
-<button onclick="deleteAll()" class="btn-danger">
+<button onclick="deleteAll()" class="btn-danger" aria-label="Elimina tutti i dati">
 🗑️ Elimina Tutti i Dati
 </button>
 </div>
@@ -2010,15 +2060,16 @@ Trasferisce il residuo nel prossimo mese e archivia i dati attuali
 </div>
 </div>
 
+
 <!-- Category Modal -->
 <div id="categoryModal" class="modal-overlay" onclick="closeCategoryModal(event)">
 <div class="modal-content" onclick="event.stopPropagation()">
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
 <h2>Nuova Categoria</h2>
-<button onclick="closeCategoryModal()" class="btn-small btn-ghost">✕</button>
+<button onclick="closeCategoryModal()" class="btn-small btn-ghost" aria-label="Chiudi">✕</button>
 </div>
 
-<input type="text" id="newCatName" placeholder="Nome categoria">
+<input type="text" id="newCatName" placeholder="Nome categoria" aria-label="Nome categoria">
 
 <h3 style="margin-top: 24px;">Seleziona Icona</h3>
 <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin: 16px 0;">
@@ -2048,7 +2099,7 @@ Trasferisce il residuo nel prossimo mese e archivia i dati attuali
 <div class="color-option" style="background: #990000;" onclick="selectColor(this, '#990000')"></div>
 </div>
 
-<button onclick="saveCategory()" style="margin-top: 24px;">Salva Categoria</button>
+<button onclick="saveCategory()" style="margin-top: 24px;" aria-label="Salva categoria">Salva Categoria</button>
 </div>
 </div>
 
@@ -2085,11 +2136,86 @@ let touchStartY = 0;
 let isSwiping = false;
 let tempFixedExpenses = [];
 
+// ==================== DEBOUNCE UTILITY ====================
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+const debouncedFilterSpese = debounce(filterSpese, 300);
+
+// ==================== CURRENCY FORMATTING ====================
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('it-IT', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 2
+    }).format(amount);
+}
+
+// ==================== PULL TO REFRESH ====================
+let pullStartY = 0;
+let isPulling = false;
+
+function initPullToRefresh() {
+    const container = document.querySelector('.container');
+    const ptrIndicator = document.getElementById('ptrIndicator');
+    
+    container.addEventListener('touchstart', (e) => {
+        if (window.scrollY === 0) {
+            pullStartY = e.touches[0].clientY;
+            isPulling = true;
+        }
+    }, { passive: true });
+    
+    container.addEventListener('touchmove', (e) => {
+        if (!isPulling) return;
+        const pullDistance = e.touches[0].clientY - pullStartY;
+        
+        if (pullDistance > 0 && pullDistance < 150) {
+            ptrIndicator.classList.add('visible');
+            if (pullDistance > 100) {
+                ptrIndicator.querySelector('span:last-child').textContent = 'Rilascia per aggiornare';
+                ptrIndicator.classList.add('spinning');
+            } else {
+                ptrIndicator.querySelector('span:last-child').textContent = 'Trascina giù per aggiornare';
+                ptrIndicator.classList.remove('spinning');
+            }
+        }
+    }, { passive: true });
+    
+    container.addEventListener('touchend', (e) => {
+        if (!isPulling) return;
+        const pullDistance = e.changedTouches[0].clientY - pullStartY;
+        
+        if (pullDistance > 100) {
+            // Esegui refresh
+            location.reload();
+        } else {
+            ptrIndicator.classList.remove('visible');
+        }
+        
+        isPulling = false;
+        pullStartY = 0;
+    }, { passive: true });
+}
+
 // ==================== INITIALIZATION ====================
 document.addEventListener('DOMContentLoaded', () => {
+// Applica tema immediatamente per evitare flash
+initThemeEarly();
+
 loadData();
 initTheme();
 initSwipeNavigation();
+initPullToRefresh();
 initHaptic();
 
 if (!appData.user.name) {
@@ -2101,7 +2227,50 @@ showMainApp();
 const today = new Date().toISOString().split('T')[0];
 document.getElementById('inputSpesaData').value = today;
 document.getElementById('inputExtraData').value = today;
+
+// Avvia backup automatico
+autoBackup();
 });
+
+function initThemeEarly() {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const savedTheme = localStorage.getItem('theme') || 'auto';
+    
+    if (savedTheme === 'dark' || (savedTheme === 'auto' && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+}
+
+// ==================== AUTO BACKUP ====================
+function autoBackup() {
+    const lastBackup = localStorage.getItem('lastBackupDate');
+    const today = new Date().toDateString();
+    
+    if (lastBackup !== today) {
+        const dataStr = JSON.stringify(appData);
+        localStorage.setItem('budgetPro_auto_backup_' + today, dataStr);
+        localStorage.setItem('lastBackupDate', today);
+        
+        // Mantieni solo ultimi 7 backup
+        cleanupOldBackups();
+    }
+}
+
+function cleanupOldBackups() {
+    const backups = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('budgetPro_auto_backup_')) {
+            backups.push(key);
+        }
+    }
+    
+    if (backups.length > 7) {
+        backups.sort();
+        const toRemove = backups.slice(0, backups.length - 7);
+        toRemove.forEach(key => localStorage.removeItem(key));
+    }
+}
 
 // ==================== HAPTIC FEEDBACK ====================
 function initHaptic() {
@@ -2209,13 +2378,13 @@ function showSmartAlert(icon, title, text, type = 'warning') {
 const container = document.getElementById('smartAlertContainer');
 const alertId = 'alert_' + Date.now();
 const alertHTML = `
-<div id="${alertId}" class="smart-alert ${type}">
+<div id="${alertId}" class="smart-alert ${type}" role="alert">
 <div class="smart-alert-icon">${icon}</div>
 <div class="smart-alert-content">
 <div class="smart-alert-title">${title}</div>
 <div class="smart-alert-text">${text}</div>
 </div>
-<button class="smart-alert-close" onclick="closeSmartAlert('${alertId}')">✕</button>
+<button class="smart-alert-close" onclick="closeSmartAlert('${alertId}')" aria-label="Chiudi alert">✕</button>
 </div>
 `;
 container.insertAdjacentHTML('beforeend', alertHTML);
@@ -2234,85 +2403,20 @@ setTimeout(() => alert.remove(), 400);
 }
 }
 
-// ==================== SPOTLIGHT SEARCH ====================
-function openSpotlight() {
-document.getElementById('spotlightOverlay').classList.add('active');
-document.getElementById('spotlightInput').focus();
-haptic('medium');
-}
-
-function closeSpotlight() {
-document.getElementById('spotlightOverlay').classList.remove('active');
-document.getElementById('spotlightInput').value = '';
-document.getElementById('spotlightResults').innerHTML = '';
-}
-
-function searchSpotlight() {
-const query = document.getElementById('spotlightInput').value.toLowerCase();
-const results = document.getElementById('spotlightResults');
-if (query.length < 2) {
-results.innerHTML = '';
-return;
-}
-const matches = [];
-const monthData = getCurrentMonthData();
-monthData.expenses.forEach(e => {
-if (e.name.toLowerCase().includes(query) || e.category.toLowerCase().includes(query)) {
-matches.push({
-type: 'expense',
-title: e.name,
-subtitle: `${e.category} • €${e.amount.toFixed(2)}`,
-icon: getCategoryIcon(e.category),
-action: () => { closeSpotlight(); switchTab('home', document.querySelectorAll('.nav-item')[0]); }
-});
-}
-});
-appData.goals.forEach(g => {
-if (g.name.toLowerCase().includes(query)) {
-matches.push({
-type: 'goal',
-title: g.name,
-subtitle: `Obiettivo • €${g.current}/${g.target}`,
-icon: '🎯',
-action: () => { closeSpotlight(); switchTab('goals', document.querySelectorAll('.nav-item')[1]); }
-});
-}
-});
-appData.settings.categories.forEach(c => {
-if (c.name.toLowerCase().includes(query)) {
-matches.push({
-type: 'category',
-title: c.name,
-subtitle: 'Categoria',
-icon: c.icon,
-action: () => { closeSpotlight(); switchTab('settings', document.querySelectorAll('.nav-item')[3]); }
-});
-}
-});
-results.innerHTML = matches.map(m => `
-<div class="spotlight-item" onclick="(${m.action.toString()})()">
-<div style="display: flex; align-items: center; gap: 12px;">
-<span style="font-size: 24px;">${m.icon}</span>
-<div>
-<div style="font-weight: 600;">${m.title}</div>
-<div style="font-size: 13px; color: var(--text-secondary);">${m.subtitle}</div>
-</div>
-</div>
-</div>
-`).join('');
-if (matches.length === 0) {
-results.innerHTML = '<div class="spotlight-item" style="text-align: center; color: var(--text-secondary);">Nessun risultato</div>';
-}
-}
-
 // ==================== THEME & SETUP ====================
 function initTheme() {
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 const savedTheme = localStorage.getItem('theme') || 'auto';
+const btn = document.getElementById('themeToggle');
+
 if (savedTheme === 'dark' || (savedTheme === 'auto' && prefersDark)) {
 document.documentElement.setAttribute('data-theme', 'dark');
-document.getElementById('themeToggle').textContent = '☀️';
+btn.textContent = '☀️';
+} else {
+document.documentElement.removeAttribute('data-theme');
+btn.textContent = '🌙';
 }
+
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
 if (localStorage.getItem('theme') === 'auto') {
 if (e.matches) {
@@ -2343,6 +2447,8 @@ function showSetup() {
 document.querySelectorAll('.setup-screen').forEach(s => s.classList.remove('active'));
 document.getElementById('setup0').classList.add('active');
 document.getElementById('mainApp').style.display = 'none';
+// CORRETTO: Inizializza tempFixedExpenses all'avvio del setup
+tempFixedExpenses = [];
 }
 
 function showMainApp() {
@@ -2401,6 +2507,7 @@ return;
 appData.finances.baseIncome = entrate;
 document.getElementById('setup1').classList.remove('active');
 document.getElementById('setup2').classList.add('active');
+// CORRETTO: Inizializza tempFixedExpenses qui come array vuoto
 tempFixedExpenses = [];
 renderSetupFisse();
 haptic('medium');
@@ -2429,32 +2536,37 @@ haptic('medium');
 
 function renderSetupFisse() {
 const container = document.getElementById('listaFisseSetup');
-const totale = tempFixedExpenses.reduce((sum, f) => sum + f.amount, 0);
-document.getElementById('totFisse').textContent = '€' + totale.toFixed(0);
-if (tempFixedExpenses.length === 0) {
+// CORRETTO: Gestisci il caso in cui tempFixedExpenses è undefined
+const expenses = tempFixedExpenses || [];
+const totale = expenses.reduce((sum, f) => sum + f.amount, 0);
+document.getElementById('totFisse').textContent = formatCurrency(totale);
+if (expenses.length === 0) {
 container.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">Nessuna spesa fissa aggiunta</p>';
 return;
 }
-container.innerHTML = tempFixedExpenses.map(f => `
+container.innerHTML = expenses.map(f => `
 <div class="fixed-item">
 <div class="fixed-icon">${getCategoryIcon(f.category)}</div>
 <div class="fixed-info">
 <div class="fixed-name">${f.name}</div>
-<div class="fixed-amount">${f.category} • €${f.amount.toFixed(2)}</div>
+<div class="fixed-amount">${f.category} • ${formatCurrency(f.amount)}</div>
 </div>
-<button onclick="removeFixedSetup(${f.id})" class="icon-btn">🗑️</button>
+<button onclick="removeFixedSetup(${f.id})" class="icon-btn" aria-label="Elimina">🗑️</button>
 </div>
 `).join('');
 }
 
 function removeFixedSetup(id) {
+// CORRETTO: Gestisci il caso in cui tempFixedExpenses è undefined
+if (!tempFixedExpenses) tempFixedExpenses = [];
 tempFixedExpenses = tempFixedExpenses.filter(f => f.id !== id);
 renderSetupFisse();
 haptic('light');
 }
 
 function finishSetup() {
-appData.finances.fixedExpenses = [...tempFixedExpenses];
+// CORRETTO: Assicurati che tempFixedExpenses sia un array
+appData.finances.fixedExpenses = tempFixedExpenses || [];
 saveData();
 showMainApp();
 showToast('Benvenuto ' + appData.user.name + '! 🎉');
@@ -2560,7 +2672,7 @@ document.getElementById('settingsData').textContent = new Date(appData.user.crea
 // Rollover banner
 if (monthData.rollover > 0) {
 document.getElementById('rolloverBanner').style.display = 'flex';
-document.getElementById('rolloverAmount').textContent = '€' + monthData.rollover.toFixed(2);
+document.getElementById('rolloverAmount').textContent = formatCurrency(monthData.rollover);
 } else {
 document.getElementById('rolloverBanner').style.display = 'none';
 }
@@ -2574,12 +2686,12 @@ const available = totalIncome - totalExpenses - fixedExpenses - goalsAllocation;
 const dailyBudget = remainingDays > 0 ? available / remainingDays : 0;
 
 // Main display
-document.getElementById('displayLibero').textContent = '€' + available.toFixed(2);
-document.getElementById('displayEntrate').textContent = '€' + totalIncome.toFixed(2);
-document.getElementById('displaySpese').textContent = '€' + totalExpenses.toFixed(2);
+document.getElementById('displayLibero').textContent = formatCurrency(available);
+document.getElementById('displayEntrate').textContent = formatCurrency(totalIncome);
+document.getElementById('displaySpese').textContent = formatCurrency(totalExpenses);
 
 // Daily budget
-document.getElementById('dailyBudget').textContent = '€' + dailyBudget.toFixed(0) + '/giorno';
+document.getElementById('dailyBudget').textContent = formatCurrency(dailyBudget) + '/giorno';
 const dailySpent = monthData.expenses.filter(e => e.date === today.toISOString().split('T')[0]).reduce((s, e) => s + e.amount, 0);
 const dailyPercent = Math.min((dailySpent / dailyBudget) * 100, 100);
 document.getElementById('dailyProgress').style.width = dailyPercent + '%';
@@ -2600,6 +2712,7 @@ renderGoals();
 renderFixedExpenses();
 renderCategories();
 renderCategoryBudgets();
+renderExtraIncome(); // CORRETTO: Aggiunta chiamata mancante
 updateCategorySelects();
 
 // PIN toggle
@@ -2612,7 +2725,7 @@ document.getElementById('pinStatus').textContent = 'Disattivata';
 }
 
 // Base income
-document.getElementById('baseIncomeDisplay').textContent = '€' + appData.finances.baseIncome.toFixed(2);
+document.getElementById('baseIncomeDisplay').textContent = formatCurrency(appData.finances.baseIncome);
 }
 
 function formatMonth(monthStr) {
@@ -2647,13 +2760,8 @@ el.classList.add('active');
 document.querySelectorAll('.swipe-dot').forEach((d, i) => {
 d.classList.toggle('active', i === newIndex);
 });
-const titles = {
-'home': 'Budget Pro',
-'goals': 'Obiettivi',
-'stats': 'Statistiche',
-'settings': 'Impostazioni'
-};
-document.getElementById('statusTitle').textContent = titles[tab];
+// CORRETTO: Usa querySelector invece di getElementById
+document.querySelector('.status-title').textContent = titles[tab];
 window.scrollTo(0, 0);
 if (tab === 'stats') {
 setTimeout(updateCharts, 100);
@@ -2661,6 +2769,13 @@ renderMonthSelectorStats();
 }
 }, 100);
 }
+
+const titles = {
+'home': 'Budget Pro',
+'goals': 'Obiettivi',
+'stats': 'Statistiche',
+'settings': 'Impostazioni'
+};
 
 // ==================== MONTH SELECTORS ====================
 function renderMonthSelector() {
@@ -2734,7 +2849,7 @@ saveData();
 updateUI();
 renderMonthSelector();
 renderMonthSelectorStats();
-showToast('Mese chiuso! Rollover: €' + Math.max(0, rollover).toFixed(2));
+showToast('Mese chiuso! Rollover: ' + formatCurrency(Math.max(0, rollover)));
 haptic('success');
 }
 
@@ -2833,8 +2948,8 @@ container.innerHTML = expenses.map(e => `
 <div class="list-item-subtitle">${getCategoryIcon(e.category)} ${e.category} • ${formatDate(e.date)}</div>
 </div>
 <div style="text-align: right;">
-<div class="list-item-amount amount-negative">-€${e.amount.toFixed(2)}</div>
-<button onclick="removeExpense(${e.id})" class="icon-btn" style="margin-top: 4px;">🗑️</button>
+<div class="list-item-amount amount-negative">-${formatCurrency(e.amount)}</div>
+<button onclick="removeExpense(${e.id})" class="icon-btn" style="margin-top: 4px;" aria-label="Elimina spesa">🗑️</button>
 </div>
 </div>
 `).join('');
@@ -2959,10 +3074,10 @@ ${c.icon}
 </div>
 <div>
 <div style="font-weight: 600;">${c.name}</div>
-<div style="font-size: 13px; color: var(--text-secondary);">Budget: €${c.budget || 0}</div>
+<div style="font-size: 13px; color: var(--text-secondary);">Budget: ${formatCurrency(c.budget || 0)}</div>
 </div>
 </div>
-<button onclick="deleteCategory('${c.id}')" class="icon-btn">🗑️</button>
+<button onclick="deleteCategory('${c.id}')" class="icon-btn" aria-label="Elimina categoria">🗑️</button>
 </div>
 `).join('');
 }
@@ -2990,7 +3105,7 @@ return `
 <div style="margin-bottom: 16px;">
 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
 <span style="font-weight: 600;">${c.icon} ${c.name}</span>
-<span style="color: var(--text-secondary);">€${spent.toFixed(0)} / €${budget}</span>
+<span style="color: var(--text-secondary);">${formatCurrency(spent)} / ${formatCurrency(budget)}</span>
 </div>
 <div class="progress-bar">
 <div class="progress-fill ${colorClass}" style="width: ${percent}%; background: ${c.color === '#FF0000' || c.color === '#CC0000' || c.color === '#990000' ? c.color : 'var(--text-primary)'};"></div>
@@ -3053,7 +3168,7 @@ updateUI();
 function renderFixedExpenses() {
 const container = document.getElementById('fixedExpensesList');
 const total = appData.finances.fixedExpenses.filter(f => f.active).reduce((s, f) => s + f.amount, 0);
-document.getElementById('totalFixedDisplay').textContent = '€' + total.toFixed(2);
+document.getElementById('totalFixedDisplay').textContent = formatCurrency(total);
 if (appData.finances.fixedExpenses.length === 0) {
 container.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Nessuna spesa fissa</p>';
 return;
@@ -3065,11 +3180,11 @@ ${getCategoryIcon(f.category)}
 </div>
 <div class="fixed-info">
 <div class="fixed-name">${f.name}</div>
-<div class="fixed-amount">${f.category} • €${f.amount.toFixed(2)}</div>
+<div class="fixed-amount">${f.category} • ${formatCurrency(f.amount)}</div>
 </div>
 <div style="display: flex; gap: 8px;">
-<button onclick="toggleFixed(${f.id})" class="icon-btn">${f.active ? '👁️' : '👁️‍🗨️'}</button>
-<button onclick="removeFixedExpense(${f.id})" class="icon-btn">🗑️</button>
+<button onclick="toggleFixed(${f.id})" class="icon-btn" aria-label="${f.active ? 'Disattiva' : 'Attiva'}">${f.active ? '👁️' : '👁️‍🗨️'}</button>
+<button onclick="removeFixedExpense(${f.id})" class="icon-btn" aria-label="Elimina">🗑️</button>
 </div>
 </div>
 `).join('');
@@ -3140,19 +3255,19 @@ return `
 <h4>${g.name}</h4>
 ${g.deadline ? `<span class="goal-deadline">${daysLeft > 0 ? `Mancano ${daysLeft} giorni` : 'Scaduto'}</span>` : ''}
 </div>
-<button onclick="deleteGoal(${g.id})" class="icon-btn">🗑️</button>
+<button onclick="deleteGoal(${g.id})" class="icon-btn" aria-label="Elimina obiettivo">🗑️</button>
 </div>
 <div class="goal-amounts">
-<span class="goal-current" style="color: ${percent >= 100 ? 'var(--accent-green)' : 'var(--text-primary)'};">€${g.current.toFixed(2)}</span>
-<span class="goal-target">di €${g.target.toFixed(2)}</span>
+<span class="goal-current" style="color: ${percent >= 100 ? 'var(--accent-green)' : 'var(--text-primary)'};">${formatCurrency(g.current)}</span>
+<span class="goal-target">di ${formatCurrency(g.target)}</span>
 </div>
 <div class="progress-bar">
 <div class="progress-fill ${percent >= 100 ? 'success' : ''}" style="width: ${percent}%; background: ${percent >= 100 ? 'var(--text-primary)' : 'var(--text-primary)'};"></div>
 </div>
 ${percent < 100 ? `
 <div style="margin-top: 12px; display: flex; gap: 8px;">
-<input type="number" id="addGoal_${g.id}" placeholder="Aggiungi €" style="flex: 1; padding: 8px 12px; font-size: 15px; border: 1px solid var(--glass-border);">
-<button onclick="addToGoalFromInput(${g.id})" class="btn-small btn-success">+</button>
+<input type="number" id="addGoal_${g.id}" placeholder="Aggiungi €" style="flex: 1; padding: 8px 12px; font-size: 15px; border: 1px solid var(--glass-border);" aria-label="Aggiungi importo">
+<button onclick="addToGoalFromInput(${g.id})" class="btn-small btn-success" aria-label="Aggiungi">+</button>
 </div>
 ` : '<div style="margin-top: 12px; text-align: center; font-weight: 600;">🎉 Completato!</div>'}
 </div>
@@ -3212,7 +3327,12 @@ scales: {
 y: {
 beginAtZero: true,
 grid: { color: 'rgba(0,0,0,0.05)' },
-ticks: { color: '#666666' }
+ticks: { 
+    color: '#666666',
+    callback: function(value) {
+        return '€' + value;
+    }
+}
 },
 x: {
 grid: { display: false },
@@ -3297,13 +3417,13 @@ ${a.icon}
 <div>
 <div style="font-weight: 600;">${a.name}</div>
 <div style="font-size: 13px; color: ${isOver ? 'var(--accent-red)' : 'var(--text-secondary)'};">
-${isOver ? 'Superato di ' : 'Rimanenti '}${Math.abs(a.remaining).toFixed(0)}€
+${isOver ? 'Superato di ' : 'Rimanenti '}${formatCurrency(Math.abs(a.remaining))}
 </div>
 </div>
 </div>
 <div style="text-align: right;">
 <div style="font-weight: 700; color: ${isOver ? 'var(--accent-red)' : 'var(--text-primary)'};">${percent.toFixed(0)}%</div>
-<div style="font-size: 12px; color: var(--text-secondary);">€${a.spent}/€${a.budget}</div>
+<div style="font-size: 12px; color: var(--text-secondary);">${formatCurrency(a.spent)}/${formatCurrency(a.budget)}</div>
 </div>
 </div>
 `;
@@ -3321,7 +3441,6 @@ a.download = `budget_backup_${new Date().toISOString().split('T')[0]}.json`;
 a.click();
 URL.revokeObjectURL(url);
 showToast('Backup esportato!');
-document.getElementById('lastBackup').textContent = new Date().toLocaleString('it-IT');
 }
 
 function exportCSV() {
@@ -3483,8 +3602,8 @@ function renderExtraIncome() {
                 <div class="list-item-subtitle">${formatDate(e.date)}</div>
             </div>
             <div style="text-align: right;">
-                <div class="list-item-amount" style="color: var(--text-primary);">+€${e.amount.toFixed(2)}</div>
-                <button onclick="removeExtraIncome(${e.id})" class="icon-btn" style="margin-top: 4px;">🗑️</button>
+                <div class="list-item-amount" style="color: var(--text-primary);">+${formatCurrency(e.amount)}</div>
+                <button onclick="removeExtraIncome(${e.id})" class="icon-btn" style="margin-top: 4px;" aria-label="Elimina entrata">🗑️</button>
             </div>
         </div>
     `).join('');
