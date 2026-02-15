@@ -1589,9 +1589,9 @@ Disabilita protezione
 <div class="avatar-option selected" onclick="selectAvatar(this, '👤')">👤</div>
 <div class="avatar-option" onclick="selectAvatar(this, '👩')">👩</div>
 <div class="avatar-option" onclick="selectAvatar(this, '👨')">👨</div>
-<div class="avatar-option" onclick="selectAvatar(this, '🧑')">🧑</div>
-<div class="avatar-option" onclick="selectAvatar(this, '👱')">👱</div>
-<div class="avatar-option" onclick="selectAvatar(this, '🧔')">🧔</div>
+<div class="avatar-option" onclick="selectAvatar(this, '🥷')">🥷</div>
+<div class="avatar-option" onclick="selectAvatar(this, '🧑‍💻')">🧑‍💻</div>
+<div class="avatar-option" onclick="selectAvatar(this, '🧑‍🚀')">🧑‍🚀</div>
 </div>
 
 <div class="input-group">
@@ -2691,10 +2691,11 @@ document.getElementById('displayEntrate').textContent = formatCurrency(totalInco
 document.getElementById('displaySpese').textContent = formatCurrency(totalExpenses);
 
 // Daily budget
-document.getElementById('dailyBudget').textContent = formatCurrency(dailyBudget) + '/giorno';
-const dailySpent = monthData.expenses.filter(e => e.date === today.toISOString().split('T')[0]).reduce((s, e) => s + e.amount, 0);
-const dailyPercent = Math.min((dailySpent / dailyBudget) * 100, 100);
-document.getElementById('dailyProgress').style.width = dailyPercent + '%';
+const daysPassed = today.getDate();
+const averageDaily = daysPassed > 0 ? totalExpenses / daysPassed : 0;
+const projection = totalExpenses + (averageDaily * remainingDays);
+
+document.getElementById('statPrevisione').textContent = '€' + projection.toFixed(0);
 
 // Quick stats
 document.getElementById('quickDaily').textContent = '€' + dailyBudget.toFixed(0);
@@ -2703,8 +2704,6 @@ document.getElementById('quickGoals').textContent = '€' + goalsSpent.toFixed(0
 
 // Stats grid
 document.getElementById('statGiorni').textContent = remainingDays;
-const projection = totalExpenses + (dailySpent * remainingDays);
-document.getElementById('statPrevisione').textContent = '€' + projection.toFixed(0);
 
 // Lists
 renderSpese();
@@ -3061,25 +3060,32 @@ haptic('success');
 }
 
 function renderCategories() {
-const container = document.getElementById('categoriesList');
-if (appData.settings.categories.length === 0) {
-container.innerHTML = '<p style="color: var(--text-secondary);">Nessuna categoria personalizzata</p>';
-return;
-}
-container.innerHTML = appData.settings.categories.map(c => `
-<div class="list-item">
-<div style="display: flex; align-items: center; gap: 12px;">
-<div style="width: 40px; height: 40px; border-radius: 10px; background: ${c.color}; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-${c.icon}
-</div>
-<div>
-<div style="font-weight: 600;">${c.name}</div>
-<div style="font-size: 13px; color: var(--text-secondary);">Budget: ${formatCurrency(c.budget || 0)}</div>
-</div>
-</div>
-<button onclick="deleteCategory('${c.id}')" class="icon-btn" aria-label="Elimina categoria">🗑️</button>
-</div>
-`).join('');
+    const container = document.getElementById('categoriesList');
+    const monthData = getCurrentMonthData();
+    
+    if (appData.settings.categories.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-secondary);">Nessuna categoria personalizzata</p>';
+        return;
+    }
+    
+    container.innerHTML = appData.settings.categories.map(c => {
+        const spent = monthData.expenses.filter(e => e.category === c.name).reduce((s, e) => s + e.amount, 0);
+        
+        return `
+        <div class="list-item">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: 10px; background: ${c.color}; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                    ${c.icon}
+                </div>
+                <div>
+                    <div style="font-weight: 600;">${c.name}</div>
+                    <div style="font-size: 13px; color: var(--text-secondary);">Speso: ${formatCurrency(spent)}</div>
+                </div>
+            </div>
+            <button onclick="deleteCategory('${c.id}')" class="icon-btn" aria-label="Elimina categoria">🗑️</button>
+        </div>
+        `;
+    }).join('');
 }
 
 function deleteCategory(id) {
@@ -3358,10 +3364,8 @@ categories[e.category] += e.amount;
 
 const labels = Object.keys(categories);
 const data = Object.values(categories);
-const colors = labels.map(l => {
-const color = getCategoryColor(l);
-return color === '#000000' || color === '#333333' || color === '#666666' || color === '#999999' || color === '#CCCCCC' ? color : '#000000';
-});
+const grayScale = ['#000000', '#222222', '#444444', '#666666', '#888888', '#AAAAAA', '#333333', '#555555'];
+const colors = labels.map((l, i) => grayScale[i % grayScale.length]);
 
 chartInstances.pie = new Chart(ctx, {
 type: 'doughnut',
